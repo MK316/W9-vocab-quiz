@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>English Vocabulary Quiz</title>
+
+  <!-- Supabase JavaScript v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans KR", sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    .container {
+      width: min(92%, 650px);
+      margin: 60px auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .progress {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 10px;
+    }
+
+    .word {
+      font-size: 30px;
+      font-weight: bold;
+      margin: 12px 0 24px;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      padding: 15px 16px;
+      border: 1px solid #d7dce5;
+      border-radius: 10px;
+      background: white;
+      font-size: 17px;
+      cursor: pointer;
+      text-align: left;
+      transition: 0.15s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: #f3f6fa;
+      border-color: #9da8b7;
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+      opacity: 0.85;
+    }
+
+    .option-btn.correct {
+      border-color: #2e8b57;
+      background: #eaf7ef;
+    }
+
+    .option-btn.wrong {
+      border-color: #c94b4b;
+      background: #fdeeee;
+    }
+
+    .feedback {
+      min-height: 28px;
+      margin-top: 20px;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .save-status {
+      min-height: 22px;
+      margin-top: 8px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .next-btn,
+    .restart-btn {
+      display: none;
+      margin-top: 24px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #202938;
+      color: white;
+    }
+
+    .next-btn:hover,
+    .restart-btn:hover {
+      background: #364154;
+    }
+
+    .result {
+      display: none;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .score {
+      font-size: 42px;
+      font-weight: bold;
+      margin: 24px 0 10px;
+    }
+
+    .result-text {
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .attempt-note {
+      margin-top: 24px;
+      color: #888;
+      font-size: 12px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="card">
+
+      <div id="quizArea">
+        <h1>English Vocabulary Quiz</h1>
+        <div class="subtitle">
+          영어 단어의 뜻을 선택하세요.<br>
+          각 문제에는 한 번만 답할 수 있습니다.
+        </div>
+
+        <div id="progress" class="progress"></div>
+        <div id="word" class="word"></div>
+
+        <div id="options" class="options"></div>
+
+        <div id="feedback" class="feedback"></div>
+        <div id="saveStatus" class="save-status"></div>
+
+        <button id="nextBtn" class="next-btn">
+          다음 문제
+        </button>
+      </div>
+
+      <div id="resultArea" class="result">
+        <h1>Quiz Complete</h1>
+
+        <div id="score" class="score"></div>
+        <div class="result-text">
+          3문제를 모두 완료했습니다.
+        </div>
+
+        <button id="restartBtn" class="restart-btn">
+          다시 풀기
+        </button>
+
+        <div id="attemptNote" class="attempt-note"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // =====================================================
+    // 1. Supabase 설정
+    // 아래 두 값만 자신의 Supabase 프로젝트 값으로 교체하세요.
+    // =====================================================
+
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_PUBLISHABLE_KEY = "YOUR_PUBLISHABLE_KEY";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+    // =====================================================
+    // 2. Quiz data
+    // =====================================================
+
+    const questions = [
+      {
+        question_no: 1,
+        english_word: "abundant",
+        options: ["조용한", "풍부한", "위험한", "느린"],
+        correct_answer: "풍부한"
+      },
+      {
+        question_no: 2,
+        english_word: "reluctant",
+        options: ["주저하는", "열정적인", "정확한", "부지런한"],
+        correct_answer: "주저하는"
+      },
+      {
+        question_no: 3,
+        english_word: "brief",
+        options: ["강력한", "평범한", "짧은", "불규칙한"],
+        correct_answer: "짧은"
+      }
+    ];
+
+
+    // =====================================================
+    // 3. Quiz state
+    // =====================================================
+
+    let attemptId;
+    let currentQuestionIndex;
+    let score;
+    let questionStartTime;
+    let answered;
+
+
+    // =====================================================
+    // 4. HTML elements
+    // =====================================================
+
+    const quizArea = document.getElementById("quizArea");
+    const resultArea = document.getElementById("resultArea");
+
+    const progressElement = document.getElementById("progress");
+    const wordElement = document.getElementById("word");
+    const optionsElement = document.getElementById("options");
+
+    const feedbackElement = document.getElementById("feedback");
+    const saveStatusElement = document.getElementById("saveStatus");
+
+    const nextBtn = document.getElementById("nextBtn");
+    const restartBtn = document.getElementById("restartBtn");
+
+    const scoreElement = document.getElementById("score");
+    const attemptNoteElement = document.getElementById("attemptNote");
+
+
+    // =====================================================
+    // 5. Start a new quiz attempt
+    // =====================================================
+
+    function startQuiz() {
+      // 새로운 퀴즈 응시 ID 생성
+      attemptId = crypto.randomUUID();
+
+      currentQuestionIndex = 0;
+      score = 0;
+
+      quizArea.style.display = "block";
+      resultArea.style.display = "none";
+
+      renderQuestion();
+    }
+
+
+    // =====================================================
+    // 6. Display question
+    // =====================================================
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+
+      // 아직 답하지 않은 상태
+      answered = false;
+
+      progressElement.textContent =
+        `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+
+      wordElement.textContent = question.english_word;
+
+      optionsElement.innerHTML = "";
+      feedbackElement.textContent = "";
+      saveStatusElement.textContent = "";
+
+      nextBtn.style.display = "none";
+
+      question.options.forEach((option) => {
+        const button = document.createElement("button");
+
+        button.className = "option-btn";
+        button.textContent = option;
+
+        button.addEventListener("click", () => {
+          handleAnswer(option, button);
+        });
+
+        optionsElement.appendChild(button);
+      });
+
+      // 문제 화면이 완성된 직후 시간 측정 시작
+      questionStartTime = performance.now();
+    }
+
+
+    // =====================================================
+    // 7. Handle answer
+    // =====================================================
+
+    function handleAnswer(chosenAnswer, clickedButton) {
+      // 이미 응답했다면 아무 작업도 하지 않음
+      if (answered) {
+        return;
+      }
+
+      // 첫 번째 선택만 인정
+      answered = true;
+
+      const responseTimeMs = Math.max(
+        0,
+        Math.round(performance.now() - questionStartTime)
+      );
+
+      const question = questions[currentQuestionIndex];
+
+      const isCorrect =
+        chosenAnswer === question.correct_answer;
+
+      // 현재 응시 ID를 별도로 보관
+      // 저장이 비동기로 진행되는 동안 다시 풀기가 눌려도
+      // 기존 응답에는 기존 attempt_id가 저장됨
+      const answerAttemptId = attemptId;
+
+
+      // -------------------------------------------------
+      // 모든 보기 비활성화
+      // -------------------------------------------------
+
+      const buttons =
+        optionsElement.querySelectorAll(".option-btn");
+
+      buttons.forEach((button) => {
+        button.disabled = true;
+
+        if (button.textContent === question.correct_answer) {
+          button.classList.add("correct");
+        }
+      });
+
+
+      // -------------------------------------------------
+      // 정답 / 오답 피드백
+      // -------------------------------------------------
+
+      if (isCorrect) {
+        score++;
+        clickedButton.classList.add("correct");
+        feedbackElement.textContent = "✓ 정답입니다!";
+      } else {
+        clickedButton.classList.add("wrong");
+        feedbackElement.textContent =
+          `✗ 오답입니다. 정답은 '${question.correct_answer}'입니다.`;
+      }
+
+
+      // -------------------------------------------------
+      // Supabase 저장
+      // -------------------------------------------------
+
+      saveAnswer({
+        attempt_id: answerAttemptId,
+        question_no: question.question_no,
+        english_word: question.english_word,
+        chosen_answer: chosenAnswer,
+        is_correct: isCorrect,
+        response_time_ms: responseTimeMs
+      });
+
+
+      // -------------------------------------------------
+      // 다음 문제 / 결과 버튼 표시
+      // -------------------------------------------------
+
+      nextBtn.style.display = "block";
+
+      if (currentQuestionIndex === questions.length - 1) {
+        nextBtn.textContent = "결과 보기";
+      } else {
+        nextBtn.textContent = "다음 문제";
+      }
+    }
+
+
+    // =====================================================
+    // 8. Save one answer to Supabase
+    // =====================================================
+
+    async function saveAnswer(answerData) {
+      saveStatusElement.textContent = "응답 저장 중...";
+
+      try {
+        const { error } = await supabaseClient
+          .from("quiz_answers")
+          .insert({
+            attempt_id: answerData.attempt_id,
+            question_no: answerData.question_no,
+            english_word: answerData.english_word,
+            chosen_answer: answerData.chosen_answer,
+            is_correct: answerData.is_correct,
+            response_time_ms: answerData.response_time_ms
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        saveStatusElement.textContent =
+          "✓ 응답이 저장되었습니다.";
+
+      } catch (error) {
+        console.error("Supabase save error:", error);
+
+        saveStatusElement.textContent =
+          "⚠ 응답 저장에 실패했습니다. 퀴즈는 계속 진행할 수 있습니다.";
+      }
+    }
+
+
+    // =====================================================
+    // 9. Next question
+    // =====================================================
+
+    nextBtn.addEventListener("click", () => {
+      if (!answered) {
+        return;
+      }
+
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+
+    // =====================================================
+    // 10. Show final score
+    // =====================================================
+
+    function showResult() {
+      quizArea.style.display = "none";
+      resultArea.style.display = "block";
+
+      scoreElement.textContent =
+        `${score} / ${questions.length}`;
+
+      attemptNoteElement.textContent =
+        `Attempt ID: ${attemptId}`;
+
+      restartBtn.style.display = "block";
+    }
+
+
+    // =====================================================
+    // 11. Restart quiz
+    // =====================================================
+
+    restartBtn.addEventListener("click", () => {
+      // startQuiz()가 새로운 crypto.randomUUID()를 생성함
+      startQuiz();
+    });
+
+
+    // =====================================================
+    // 12. Initial start
+    // =====================================================
+
+    startQuiz();
+  </script>
+</body>
+</html>
