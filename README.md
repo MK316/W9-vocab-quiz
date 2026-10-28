@@ -167,3 +167,5 @@ const SUPABASE_PUBLISHABLE_KEY = "YOUR_PUBLISHABLE_KEY";
 1. Supabase > Table Editor > quiz_answers에서 새로운 3행 확인
 2. 세 행의 attempt_id가 같은지, response_time_ms가 기록되었는지 확인
 
+![table](https://github.com/MK316/W9-vocab-quiz/raw/main/quiz-screen.png)
+
