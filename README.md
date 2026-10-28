@@ -1,4 +1,4 @@
-# Learn How to Use Supabase 
+# 💨 Learn How to Use Supabase 
 
 Connecting quiz application to a database
 
@@ -14,20 +14,20 @@ Connecting quiz application to a database
 | **Supabase database** | Where the responses are stored |
 | **SQL** | Instructions that tell the database how to organize and control those responses |
 
-## Before You Get Started
+## 🔥 Before You Get Started
 
 + GenAI account: ChatGPT, Gemini, Claude, etc.
 + Github account
 + Supabase account: [https://supabase.com](https://supabase.com)
   
-## What Do We Do Today: Flow
+## 🔥 What Do We Do Today: Flow
 영어 단어 4지선다 3개 문항 퀴즈앱 > Github Pages Deploy > 사용자 테스트 > Supabase에 정오답 저장 > 
 
 ① 데이터 설계 요청(AI) → ② HTML·SQL 생성(AI) → ③ Supabase 프로젝트 생성 → ④ SQL 실행 → ⑤ html 파일에 키 입력 → ⑥ GitHub 배포 → ⑦ 앱 테스트 및 Supabase에 데이터 기록 확인
 
-# Step by Step Guidelines
+# 💦 Step by Step Guidelines
 
-## STEP 1: GenAI
+## 🌀 STEP 1: GenAI
 ### APP 설계 using AI prompt
 Copy the following and use it as prompt on your AI
 
@@ -52,7 +52,7 @@ Copy the following and use it as prompt on your AI
 아직 HTML이나 SQL 코드는 작성하지 마.
 ```
 
-## STEP 2: GenAI
+## 🌀 STEP 2: GenAI
 ### Ask AI to create html and SQL
 Copy the following and use it as prompt on your AI
 
@@ -113,55 +113,58 @@ GitHub Pages 배포 → (5) 퀴즈 3문항 응답 후 Table Editor에서 3행 �
 
 ```
 
-## STEP 3: Github
+## 🌀 STEP 3: Github
 
 1. 새로운 repository 'W9-voca-quiz'를 만들고
 2. 새 파일 만들기 > 파일이름 'index.html' > 내용은 AI가 만들어준 html 코드를 복사해서 넣기 > Commit Changes
 3. 해당 레파지토리에 index.html 파일이 생성되었는지 확인할 것
 
-## STEP 4: Supabase
+## 🌀 STEP 4: Supabase
 
 1. supabase.com 로그인
 2. New project > 이름은 'w9-voca-quiz' > 지역: Seoul (timezone related)
-3. Password (본인용; Please don't forget your passcode): 주의할 점(비밀번호는 GenAI, Github에 공개하지 않는다)
+3. Password (본인용; Please don't forget your passcode): 📌 주의할 점(비밀번호는 GenAI, Github에 공개하지 않는다)
 4. 프로젝트 생성 완료
 
-## STEP 5: Supabase
+## 🌀 STEP 5: Supabase
 ### SQL Query 실행하기
 
 1. Supabase의 SQL Editor > New query 선택
 2. GenAI가 생성한 SQL 코드 붙여 넣기 > Run
 3. Table Editor > quiz answers 테이블 확인(처음에는 0행이고 정상임)
 
-## STEP 6: Supabase / Github
+## 🌀 STEP 6: Supabase / Github
 ### Project URL, Publishable key 연결하기
 
 1. Supabase의 왼쪽 사이드바 > Project Overview에서 다음 두 개의 값을 찾는다
    + const SUPABASE_URL
    + const SUPABASE_PUBLISHABLE_KEY
 
-2. Github repository (w9-voca-quiz)안에 있는 index.html 편집을 연다
-3. 코드에서 아래처럼 된 코드줄을 찾아서, "YOUR_SUPABASE_URL", "YOUR_PUBLISHABLE_KEY" 대신 실제 값을 넣는다.
+2. Github repository (w9-voca-quiz)안에 있는 index.html 편집 누르기
+3. 코드에서 아래처럼 된 코드줄을 찾아서, 📌"YOUR_SUPABASE_URL", 📌"YOUR_PUBLISHABLE_KEY" 대신 실제 값을 넣는다.
 
+참고: 코드에서 단어 찾기(컨트롤 + f; 맥에서는 command + f)
 ```
+# 주의: 바꿔야 하는 부분을 정확하게 이해하고 붙이기
+
 const SUPABASE_URL = "YOUR_SUPABASE_URL";
 const SUPABASE_PUBLISHABLE_KEY = "YOUR_PUBLISHABLE_KEY";
 ```
 
-## STEP 7: Github
+## 🌀 STEP 7: Github
 ### App deployment
 
 1. Go to the repository (w9-voca-quiz)
 2. 상단에 Settings > Pages
 3. Deploy from a branch > main/(root) > Save
-4. 배포 완료 후 Visit site를 눌러 앱 열기
+4. 배포 완료 후 상단에 제공된 Visit site를 눌러 앱 열기 (새 브라우저에서 앱이 열림)
 
-## STEP 8: HTML app browser
+## 🌀 STEP 8: HTML app browser
 ### APP test
 
 문제를 풀고 저장, 2회 하기 (답을 다르게도 해 보기) > Success message
 
-## STEP 9: Supabase
+## 🌀 STEP 9: Supabase
 ### Check how the data is stored
 
 1. Supabase > Table Editor > quiz_answers에서 새로운 3행 확인
@@ -169,3 +172,14 @@ const SUPABASE_PUBLISHABLE_KEY = "YOUR_PUBLISHABLE_KEY";
 
 ![table](https://github.com/MK316/W9-vocab-quiz/raw/main/quiz-screen.png)
 
+## 🌀 STEP 10: (Optional)
+### If you find problems, ask GenAI
+
++ Be specific with your question
++ Provide error message or screenshot
+
+## Final remark
+
++ 이번 예시는 개인정보 없는 연습용입니다.
++ 익명 INSERT를 허용하므로 외부에서 임의 기록을 추가할 수 있습니다.
++ 실제 학습자 데이터를 저장하는 서비스에는 로그인, 사용자별 RLS 및 남용 방지 장치가 추가로 필요합니다.
